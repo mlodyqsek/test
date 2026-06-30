@@ -76,14 +76,17 @@
     display:flex;
     align-items:center;
     justify-content:center;
-    filter:drop-shadow(0 0 38px rgba(196,40,28,0.45)) drop-shadow(0 0 80px rgba(196,40,28,0.18));
+    filter:drop-shadow(0 0 38px rgba(196,40,28,0.45)) drop-shadow(0 0 70px rgba(196,40,28,0.18));
     animation:breathe 5s ease-in-out infinite;
   }
   @keyframes breathe{
     0%,100%{ transform:scale(1); }
     50%{ transform:scale(1.035); }
   }
-  .rose-wrap svg{ width:58vw; max-width:230px; height:auto; }
+  .rose-wrap .rose-emoji{
+    font-size:78px;
+    line-height:1;
+  }
 
   .eyebrow{
     margin-top:5vh;
@@ -99,8 +102,8 @@
     font-family:'Cormorant Garamond', serif;
     font-style:italic;
     font-weight:500;
-    font-size:13vw;
-    line-height:1.05;
+    font-size:9.5vw;
+    line-height:1.12;
     margin:14px 0 0 0;
     text-align:center;
     color:var(--cream);
@@ -169,10 +172,18 @@
     padding:15px 30px;
     border:1px solid rgba(154,140,120,0.4);
     transform:scale(1);
+    white-space:nowrap;
+  }
+  #nie.roaming{
+    position:fixed;
+    top:50%;
+    left:50%;
+    z-index:20;
+    transition:top .45s cubic-bezier(.34,1.56,.64,1), left .45s cubic-bezier(.34,1.56,.64,1), transform .35s cubic-bezier(.34,1.56,.64,1), opacity .35s ease, font-size .35s ease, padding .35s ease;
   }
   #nie.hidden{
     opacity:0;
-    transform:scale(0.2);
+    transform:scale(0.2) !important;
     pointer-events:none;
     width:0;
     padding:0;
@@ -181,6 +192,94 @@
 
   .footer-space{
     height:7vh;
+  }
+
+  .sound-control{
+    position:fixed;
+    top:max(16px, env(safe-area-inset-top));
+    right:16px;
+    z-index:30;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    background:rgba(10,5,5,0.55);
+    backdrop-filter:blur(6px);
+    border:1px solid rgba(154,140,120,0.35);
+    border-radius:999px;
+    padding:0;
+    height:38px;
+    overflow:hidden;
+    transition:padding .35s ease;
+  }
+  .sound-control.open{
+    padding-left:14px;
+  }
+
+  #muteBtn{
+    flex:none;
+    width:38px;
+    height:38px;
+    border-radius:50%;
+    border:none;
+    background:transparent;
+    color:var(--cream);
+    font-size:16px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:0;
+    transition:transform .3s ease;
+  }
+  #muteBtn:active{ transform:scale(0.92); }
+
+  #volumeSlider{
+    -webkit-appearance:none;
+    appearance:none;
+    width:0;
+    opacity:0;
+    height:3px;
+    margin:0;
+    background:rgba(154,140,120,0.35);
+    border-radius:999px;
+    outline:none;
+    transition:width .35s ease, opacity .25s ease, margin .35s ease;
+    pointer-events:none;
+  }
+  .sound-control.open #volumeSlider{
+    width:88px;
+    opacity:1;
+    margin-right:14px;
+    pointer-events:auto;
+  }
+  #volumeSlider::-webkit-slider-thumb{
+    -webkit-appearance:none;
+    appearance:none;
+    width:13px;
+    height:13px;
+    border-radius:50%;
+    background:var(--rose-bright);
+    box-shadow:0 0 6px rgba(232,65,44,0.7);
+    cursor:pointer;
+    margin-top:-5px;
+  }
+  #volumeSlider::-webkit-slider-runnable-track{
+    height:3px;
+    border-radius:999px;
+    background:rgba(154,140,120,0.35);
+  }
+  #volumeSlider::-moz-range-thumb{
+    width:13px;
+    height:13px;
+    border:none;
+    border-radius:50%;
+    background:var(--rose-bright);
+    box-shadow:0 0 6px rgba(232,65,44,0.7);
+    cursor:pointer;
+  }
+  #volumeSlider::-moz-range-track{
+    height:3px;
+    border-radius:999px;
+    background:rgba(154,140,120,0.35);
   }
 
   /* ---- Reveal screen ---- */
@@ -238,7 +337,7 @@
   }
 
   @media (min-width:430px){
-    .question{ font-size:48px; }
+    .question{ font-size:34px; }
     .reveal p{ font-size:38px; }
   }
 </style>
@@ -247,40 +346,21 @@
 
 <div class="stage">
 
+  <audio id="bgMusic" src="music.mp3" loop preload="auto"></audio>
+  <div class="sound-control" id="soundControl">
+    <button id="muteBtn" aria-label="głośność muzyki">🔊</button>
+    <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="0.25" aria-label="poziom głośności">
+  </div>
+
   <div class="embers" id="embers"></div>
 
   <div class="main-content" id="mainContent">
     <div class="rose-wrap">
-      <svg viewBox="0 0 200 300" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <radialGradient id="petal" cx="40%" cy="35%" r="75%">
-            <stop offset="0%" stop-color="#ff5b42"/>
-            <stop offset="55%" stop-color="#d22a1c"/>
-            <stop offset="100%" stop-color="#7c0f0a"/>
-          </radialGradient>
-          <linearGradient id="stem" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stop-color="#5c7a4a"/>
-            <stop offset="100%" stop-color="#33421f"/>
-          </linearGradient>
-        </defs>
-        <!-- stem -->
-        <path d="M100 140 C 95 190, 90 230, 95 290" stroke="url(#stem)" stroke-width="5" fill="none" stroke-linecap="round"/>
-        <!-- leaves -->
-        <path d="M97 200 C 70 195, 50 210, 40 235 C 65 235, 85 222, 97 200 Z" fill="#3f5a2c"/>
-        <path d="M96 240 C 122 238, 142 252, 150 275 C 124 277, 104 263, 96 240 Z" fill="#48652f"/>
-        <!-- bloom -->
-        <g>
-          <path d="M100 60 C 60 65, 50 105, 75 135 C 55 120, 50 90, 75 65 C 60 95, 70 125, 100 140 C 70 130, 55 100, 80 70 Z" fill="url(#petal)"/>
-          <path d="M100 50 C 140 55, 152 95, 128 128 C 148 112, 152 82, 128 58 C 144 86, 134 116, 100 130 C 132 118, 146 90, 122 62 Z" fill="url(#petal)"/>
-          <path d="M100 45 C 80 40, 60 55, 60 80 C 60 105, 80 122, 100 125 C 82 118, 70 100, 72 80 C 74 60, 88 48, 100 45 Z" fill="#e84a32"/>
-          <path d="M100 45 C 120 40, 140 55, 140 80 C 140 105, 120 122, 100 125 C 118 118, 130 100, 128 80 C 126 60, 112 48, 100 45 Z" fill="#c92a1c"/>
-          <path d="M100 55 C 88 60, 82 75, 86 90 C 90 105, 100 112, 100 112 C 92 102, 88 88, 92 75 C 95 65, 100 58, 100 55 Z" fill="#960f0c"/>
-        </g>
-      </svg>
+      <span class="rose-emoji">🌹</span>
     </div>
 
     <div class="eyebrow">jedno pytanie</div>
-    <h1 class="question">kochasz <b>mnie?</b></h1>
+    <h1 class="question">a pokażesz mi tam gdzie <b>słońce tobie nie dochodzi?</b></h1>
     <p class="sub">odpowiedz szczerze...</p>
 
     <div class="answer-zone">
@@ -295,27 +375,124 @@
 
   <div class="reveal" id="reveal">
     <div class="heart">❤️</div>
-    <p>ja ciebie też, <span>Ewelina</span></p>
+    <p>czekam<span>...</span></p>
   </div>
 
 </div>
 
 <script>
+  // ---- Background music ----
+  const bgMusic = document.getElementById('bgMusic');
+  const muteBtn = document.getElementById('muteBtn');
+  const volumeSlider = document.getElementById('volumeSlider');
+  const soundControl = document.getElementById('soundControl');
+
+  const DEFAULT_VOLUME = 0.25;
+  bgMusic.volume = DEFAULT_VOLUME;
+  volumeSlider.value = DEFAULT_VOLUME;
+
+  let musicStarted = false;
+
+  function updateMuteIcon(){
+    if(bgMusic.muted || bgMusic.volume === 0){
+      muteBtn.textContent = '🔇';
+    } else if(bgMusic.volume < 0.5){
+      muteBtn.textContent = '🔉';
+    } else {
+      muteBtn.textContent = '🔊';
+    }
+  }
+
+  function startMusic(){
+    if(musicStarted) return;
+    bgMusic.play().then(() => {
+      musicStarted = true;
+    }).catch(() => {
+      // autoplay blocked, will retry on next interaction
+    });
+  }
+
+  // try immediately (works on some desktop browsers)
+  startMusic();
+
+  // most mobile browsers require a user gesture: unlock on first tap anywhere
+  ['touchstart','click'].forEach(evt => {
+    document.addEventListener(evt, function unlock(){
+      startMusic();
+      document.removeEventListener(evt, unlock);
+    }, { once:true, passive:true });
+  });
+
+  // tapping the speaker icon opens/closes the volume slider
+  muteBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    soundControl.classList.toggle('open');
+  });
+
+  // dragging the slider sets the volume live
+  volumeSlider.addEventListener('input', () => {
+    const v = parseFloat(volumeSlider.value);
+    bgMusic.volume = v;
+    bgMusic.muted = false;
+    startMusic();
+    updateMuteIcon();
+  });
+
+  // close the panel when tapping elsewhere on the page
+  document.addEventListener('click', (e) => {
+    if(!soundControl.contains(e.target)){
+      soundControl.classList.remove('open');
+    }
+  });
+
+  updateMuteIcon();
+
   let noClicks = 0;
+  const niePhrases = [
+    'na pewno?',
+    'na pewno na pewno?',
+    'wiem że chcesz kliknąć TAK',
+    'jeszcze tylko jedna szansa...',
+    'no dobra, ostatnia...'
+  ];
 
   function sayNo(){
-    noClicks++;
     const nieBtn = document.getElementById('nie');
     const takBtn = document.getElementById('tak');
+    const stage = document.querySelector('.stage');
 
-    const nieScale = Math.max(0.35, 1 - noClicks * 0.3);
-    const takScale = 1 + noClicks * 0.35;
+    noClicks++;
+
+    if(noClicks > niePhrases.length){
+      nieBtn.classList.add('hidden');
+      return;
+    }
+
+    nieBtn.textContent = niePhrases[noClicks - 1];
+
+    // switch to fixed positioning so it can roam anywhere on screen
+    nieBtn.classList.add('roaming');
+
+    const rect = stage.getBoundingClientRect();
+    const btnRect = nieBtn.getBoundingClientRect();
+    const margin = 16;
+    const maxLeft = rect.width - btnRect.width - margin;
+    const maxTop = rect.height - btnRect.height - margin;
+
+    const randLeft = rect.left + margin + Math.random() * Math.max(0, maxLeft - margin);
+    const randTop = rect.top + margin + Math.random() * Math.max(0, maxTop - margin);
+
+    nieBtn.style.left = randLeft + 'px';
+    nieBtn.style.top = randTop + 'px';
+
+    const nieScale = Math.max(0.4, 1 - noClicks * 0.14);
+    const takScale = 1 + noClicks * 0.22;
 
     nieBtn.style.transform = `scale(${nieScale})`;
     takBtn.style.transform = `scale(${takScale})`;
 
-    if(noClicks >= 2){
-      nieBtn.classList.add('hidden');
+    if(noClicks >= niePhrases.length){
+      setTimeout(() => nieBtn.classList.add('hidden'), 550);
     }
   }
 
